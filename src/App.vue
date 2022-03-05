@@ -1,32 +1,51 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+  <div>
+    <MyHeader title="购物车" background="purple" color="#fff"></MyHeader>
+    <div class="main">
+      <MyGoods :gObj="obj" v-for="obj in list" :key="obj.id"></MyGoods>
     </div>
-    <router-view/>
+
+    <MyFooter @changeFn="allFn" :arr="list"></MyFooter>
   </div>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script type = "text/ecmascript-6">
+import MyHeader from "./components/MyHeader.vue";
+import MyGoods from "./components/MyGoods.vue";
+import MyFooter from "./components/MyFooter.vue";
+export default {
+  components: {
+    MyHeader,
+    MyGoods,
+    MyFooter,
+  },
+  data() {
+    return {
+      list: [],
+    };
+  },
+  methods: {
+    async getList() {
+      const res = await this.$axios({
+        url: "/api/cart",
+      });
+      this.list = res.data.list;
+    },
+    allFn(bool) {
+      this.list.forEach((obj) => {
+        obj.goods_state = bool;
+      });
+    },
+  },
+  created() {
+    this.getList();
+  },
+};
+</script>
 
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
+<style scoped>
+.main {
+  padding-top: 45px;
+  padding-bottom: 50px;
 }
 </style>
